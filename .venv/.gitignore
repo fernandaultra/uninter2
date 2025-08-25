@@ -1,0 +1,24 @@
+# 🐍 Ambientes virtuais
+.venv/
+env/
+venv/
+
+# 🔐 Arquivo de credenciais do Google (NUNCA subir isso)
+uninter-469716-*.json
+*.json
+
+# 🧪 Arquivos de cache Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# 📂 Arquivos do PyCharm
+.idea/
+
+# 📊 Arquivos temporários ou gerados
+*.xlsx
+*.csv
+
+# 💻 Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
