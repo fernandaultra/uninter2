@@ -1,1 +1,3 @@
-pip freeze > requirements.txt
+gspread~=6.2.1
+pandas~=2.3.2
+requests~=2.32.5
