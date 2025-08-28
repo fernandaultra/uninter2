@@ -3,41 +3,33 @@ Ponto de entrada principal da aplicação Flask.
 Este arquivo configura e inicializa a aplicação Flask com todas as rotas
 e configurações necessárias.
 """
-
+import os
 from flask import Flask, jsonify
 from utils.env_loader import load_environment_variables, get_secret_key
 from routes.example_routes import example_bp
 
 
-def create_app():
+def create_app() -> Flask:
     """
-    Factory function para criar e configurar a aplicação Flask
-    
-    Returns:
-        Flask: Instância configurada da aplicação Flask
+    Factory function para criar e configurar a aplicação Flask.
     """
     # Carrega as variáveis de ambiente
     load_environment_variables()
-    
+
     # Cria a instância do Flask
     app = Flask(__name__)
-    
+
     # Configurações da aplicação
-    app.config['SECRET_KEY'] = get_secret_key()
-    app.config['JSON_SORT_KEYS'] = False  # Mantém a ordem das chaves no JSON
-    
+    # Se não houver SECRET_KEY nas envs, get_secret_key() deve retornar uma default segura
+    app.config["SECRET_KEY"] = get_secret_key()
+    app.config["JSON_SORT_KEYS"] = False  # Mantém a ordem das chaves no JSON
+
     # Registra os blueprints (rotas)
     app.register_blueprint(example_bp)
-    
+
     # Rota raiz da aplicação
-    @app.route('/')
+    @app.route("/")
     def index():
-        """
-        Rota raiz que fornece informações básicas sobre a API
-        
-        Returns:
-            json: Informações de boas-vindas e endpoints disponíveis
-        """
         return jsonify({
             "message": "Bem-vindo à API Flask!",
             "description": "Projeto Flask simples com estrutura organizada",
@@ -49,58 +41,40 @@ def create_app():
             },
             "status": "online"
         })
-    
-    # Manipulador de erro global para 404
+
+    # Manipuladores globais
     @app.errorhandler(404)
     def page_not_found(error):
-        """
-        Manipulador global de erro 404
-        
-        Returns:
-            json: Mensagem de erro 404
-        """
         return jsonify({
             "error": "Página não encontrada",
             "message": "O endpoint solicitado não existe",
             "status_code": 404
         }), 404
-    
-    # Manipulador de erro global para 500
+
     @app.errorhandler(500)
     def internal_server_error(error):
-        """
-        Manipulador global de erro 500
-        
-        Returns:
-            json: Mensagem de erro interno do servidor
-        """
         return jsonify({
             "error": "Erro interno do servidor",
             "message": "Ocorreu um erro inesperado",
             "status_code": 500
         }), 500
-    
+
     return app
 
 
-if __name__ == '__main__':
-    # Cria a aplicação
-    app = create_app()
-    
-    # Configurações para execução
-    debug_mode = True  # Defina como False em produção
-    host = '0.0.0.0'   # Permite acesso externo (necessário para Render)
-    port = 5000        # Porta padrão do Flask
-    
-    print(f"Iniciando aplicação Flask...")
+# >>> Exporte o app em nível de módulo para o Gunicorn <<<
+app = create_app()
+
+if __name__ == "__main__":
+    # Execução local (dev server). No Render use Gunicorn.
+    port = int(os.getenv("PORT", 5000))  # Render define PORT em runtime
+    host = os.getenv("HOST", "0.0.0.0")
+    debug_mode = os.getenv("FLASK_DEBUG", "1") == "1"
+
+    print("Iniciando aplicação Flask...")
     print(f"Modo debug: {debug_mode}")
     print(f"Host: {host}")
     print(f"Porta: {port}")
     print(f"Acesse: http://localhost:{port}")
-    
-    # Inicia a aplicação
-    app.run(
-        host=host,
-        port=port,
-        debug=debug_mode
-    )
+
+    app.run(host=host, port=port, debug=debug_mode)

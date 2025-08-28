@@ -3,7 +3,7 @@ services:
     name: uninter-extensionista
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "python3 app.py"
+    startCommand: "gunicorn app:app"
     envVars:
       - key: GOOGLE_CREDENTIALS_JSON
         sync: false
