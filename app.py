@@ -20,11 +20,11 @@ def create_app() -> Flask:
     app = Flask(__name__)
 
     # Configurações da aplicação
-    # Se não houver SECRET_KEY nas envs, get_secret_key() deve retornar uma default segura
-    app.config["SECRET_KEY"] = get_secret_key()
+    app.config["SECRET_KEY"] = get_secret_key()  # get_secret_key() deve prover um fallback seguro
     app.config["JSON_SORT_KEYS"] = False  # Mantém a ordem das chaves no JSON
 
     # Registra os blueprints (rotas)
+    # Se o seu blueprint já vem com prefixo "/api", mantenha como está:
     app.register_blueprint(example_bp)
 
     # Rota raiz da aplicação
@@ -37,10 +37,16 @@ def create_app() -> Flask:
                 "GET /": "Esta página de boas-vindas",
                 "GET /api/hello": "Mensagem de saudação",
                 "GET /api/info": "Informações da aplicação",
-                "GET /api/health": "Verificação de saúde da aplicação"
+                "GET /api/health": "Verificação de saúde da aplicação",
+                "GET /health": "Health check para o Render"
             },
             "status": "online"
         })
+
+    # Health check para o Render
+    @app.route("/health")
+    def health():
+        return jsonify({"status": "ok"}), 200
 
     # Manipuladores globais
     @app.errorhandler(404)
@@ -66,7 +72,7 @@ def create_app() -> Flask:
 app = create_app()
 
 if __name__ == "__main__":
-    # Execução local (dev server). No Render use Gunicorn.
+    # Execução local (dev server). No Render use Gunicorn (ver Start Command).
     port = int(os.getenv("PORT", 5000))  # Render define PORT em runtime
     host = os.getenv("HOST", "0.0.0.0")
     debug_mode = os.getenv("FLASK_DEBUG", "1") == "1"
