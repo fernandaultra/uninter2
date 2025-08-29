@@ -1,24 +1,20 @@
-# 🐍 Ambientes virtuais
-.venv/
-env/
-venv/
-
-# 🔐 Arquivo de credenciais do Google (NUNCA subir isso)
-uninter-469716-*.json
-*.json
-
-# 🧪 Arquivos de cache Python
+# Python
 __pycache__/
-*.py[cod]
-*.pyo
+*.pyc
+.venv/
+.env
 
-# 📂 Arquivos do PyCharm
+# IDE
+.vscode/
 .idea/
 
-# 📊 Arquivos temporários ou gerados
+# Dados locais
 *.xlsx
 *.csv
+*.json
 
-# 💻 Arquivos do sistema operacional
-.DS_Store
-Thumbs.db
+# Logs
+*.log
+
+# Credenciais (nunca commitar)
+JASON
